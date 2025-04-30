@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SleepHarmony - Preto e Branco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #111;
+            color: #eee;
+            font-family: 'Roboto Condensed', sans-serif;
+            min-height: 100vh;
+        }
+
+        .sound-card {
+            transition: all 0.3s ease;
+            background: #1a1a1a;
+            border: 1px solid #333;
+        }
+
+        .sound-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #aaa;
+            cursor: pointer;
+        }
+
+        .tab-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #444;
+            background-color: #222;
+            color: #eee;
+            cursor: pointer;
+            border-radius: 0.375rem;
+        }
+
+        .tab-btn.active {
+            background-color: #444;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-12">
+            <h1 class="text-5xl font-bold text-gray-100 mb-4">SleepHarmony</h1>
+            <p class="text-xl text-gray-400">Misture sons relaxantes para criar sua atmosfera perfeita de sono</p>
+        </header>
+
+        <main class="space-y-8">
+            <div class="border border-gray-700 p-6 rounded-xl bg-gray-900">
+                <h2 class="text-2xl font-bold text-gray-200 mb-4">Biblioteca de Sons</h2>
+                <div class="flex space-x-4 mb-6">
+                    <button class="tab-btn active" data-tab="floresta">Floresta</button>
+                    <button class="tab-btn" data-tab="praia">Praia</button>
+                    <button class="tab-btn" data-tab="chuva">Chuva Tranquila</button>
+                </div>
+                <div id="sound-library" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+        </main>
+
+        <footer class="mt-16 text-center text-gray-500 text-sm">
+            <p>SleepHarmony © 2023 - Seu companheiro para noites tranquilas</p>
+        </footer>
+    </div>
+
+    <script>
+        const soundCategories = {
+            floresta: [
+                { id: 'passaros', name: 'Pássaros' },
+                { id: 'folhas', name: 'Folhas' }
+            ],
+            praia: [
+                { id: 'ondas', name: 'Ondas' },
+                { id: 'gaivotas', name: 'Gaivotas' }
+            ],
+            chuva: [
+                { id: 'chuva', name: 'Chuva' },
+                { id: 'trovão', name: 'Trovão Suave' }
+            ]
+        };
+
+        let audioContext;
+        let masterGain;
+        const activeSounds = {};
+
+        document.addEventListener('DOMContentLoaded', () => {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            masterGain = audioContext.createGain();
+            masterGain.gain.value = 0.5;
+            masterGain.connect(audioContext.destination);
+
+            document.addEventListener('click', () => {
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+            }, { once: true });
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderSoundLibrary(btn.dataset.tab);
+                });
+            });
+
+            renderSoundLibrary('floresta');
+        });
+
+        function renderSoundLibrary(category) {
+            const container = document.getElementById('sound-library');
+            container.innerHTML = '';
+
+            const sounds = soundCategories[category] || [];
+            sounds.forEach(sound => {
+                const card = document.createElement('div');
+                card.className = 'sound-card p-4 rounded-lg';
+                card.dataset.soundId = sound.id;
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-lg font-semibold">${sound.name}</h3>
+                        <button class="play-btn bg-gray-700 px-3 py-1 rounded">Tocar</button>
+                    </div>
+                    <div>
+                        <input type="range" min="0" max="100" value="50" class="w-full volume-slider">
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            container.addEventListener('click', async (e) => {
+                const btn = e.target.closest('.play-btn');
+                if (!btn) return;
+                const card = btn.closest('.sound-card');
+                const soundId = card.dataset.soundId;
+
+                if (activeSounds[soundId]) {
+                    stopSound(soundId, btn);
+                } else {
+                    await playSound(soundId, card, btn);
+                }
+            });
+
+            container.addEventListener('input', (e) => {
+                if (e.target.classList.contains('volume-slider')) {
+                    const card = e.target.closest('.sound-card');
+                    const soundId = card.dataset.soundId;
+                    const volume = parseInt(e.target.value) / 100;
+                    if (activeSounds[soundId]) {
+                        activeSounds[soundId].gainNode.gain.value = volume;
+                        activeSounds[soundId].volume = volume;
+                    }
+                }
+            });
+        }
+
+        async function playSound(soundId, card, btn) {
+            const response = await fetch(`sounds/${soundId}.mp3`);
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+            const source = audioContext.createBufferSource();
+            source.buffer = audioBuffer;
+            source.loop = true;
+
+            const gainNode = audioContext.createGain();
+            const volume = parseInt(card.querySelector('.volume-slider').value) / 100;
+            gainNode.gain.value = volume;
+
+            source.connect(gainNode);
+            gainNode.connect(masterGain);
+            source.start();
+
+            activeSounds[soundId] = { source, gainNode, volume };
+            btn.textContent = 'Parar';
+        }
+
+        function stopSound(soundId, btn) {
+            const sound = activeSounds[soundId];
+            if (!sound) return;
+            sound.source.stop();
+            sound.source.disconnect();
+            sound.gainNode.disconnect();
+            delete activeSounds[soundId];
+            btn.textContent = 'Tocar';
+        }
+    </script>
+</body>
+</html>

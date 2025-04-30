@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sons da Floresta</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #e6f3e6 0%, #c3e8c3 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        .menu-item {
+            transition: all 0.4s ease;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .menu-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .menu-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+            transition: transform 0.5s ease;
+        }
+        
+        .menu-content {
+            position: relative;
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.4);
+            height: 100%;
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+        }
+        
+        .menu-item:hover .menu-bg {
+            transform: scale(1.1);
+        }
+        
+        .ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ripple:after {
+            content: "";
+            display: block;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+            background-repeat: no-repeat;
+            background-position: 50%;
+            transform: scale(10,10);
+            opacity: 0;
+            transition: transform .5s, opacity 1s;
+        }
+        
+        .ripple:active:after {
+            transform: scale(0,0);
+            opacity: 0.3;
+            transition: 0s;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .icon-container {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            margin-right: 1rem;
+        }
+        
+        /* Custom slider styles */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            margin: 10px 0;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .sound-control {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .sound-control:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .sound-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        
+        .sound-panel.active {
+            max-height: 500px;
+        }
+        
+        .back-button {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-3px);
+        }
+        
+        .firefly {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: #f8f32b;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 2px #f8f32b;
+            opacity: 0;
+        }
+        
+        @keyframes firefly {
+            0% { transform: translate(0, 0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translate(100px, 50px); opacity: 0; }
+        }
+        
+        .leaf {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%234CAF50"><path d="M17 8C8 10 5.9 16.8 3 22c5-3 9-5 14-5 0-4.5-2.5-8-5-9z"/></svg>');
+            background-size: contain;
+            opacity: 0.7;
+            z-index: 2;
+        }
+        
+        @keyframes falling-leaf {
+            0% { transform: translate(0, -50px) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translate(100px, 500px) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+    <div class="w-full max-w-md mx-auto">
+        <h1 class="text-3xl font-bold text-center mb-8 text-green-800">Sons da Floresta</h1>
+        
+        <div class="space-y-6" id="main-menu">
+            <!-- Floresta Diurna -->
+            <div class="menu-item ripple rounded-xl overflow-hidden shadow-lg h-32 relative" data-target="floresta-diurna">
+                <div id="leaves-container"></div>
+                <div class="menu-bg" style="background-image: url('https://images.unsplash.com/photo-1476231682824-37e0bc46abab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"></div>
+                <div class="menu-content">
+                    <div class="icon-container floating">
+                        <i class="fas fa-sun text-2xl text-yellow-300"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-semibold">Floresta Diurna</h2>
+                        <p class="text-white text-opacity-90">Sons da floresta durante o dia</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Floresta Noturna -->
+            <div class="menu-item ripple rounded-xl overflow-hidden shadow-lg h-32 relative" data-target="floresta-noturna">
+                <div id="fireflies-container"></div>
+                <div class="menu-bg" style="background-image: url('https://images.unsplash.com/photo-1511497584788-876760111969?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"></div>
+                <div class="menu-content">
+                    <div class="icon-container floating" style="animation-delay: 0.5s">
+                        <i class="fas fa-moon text-2xl text-blue-200"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-semibold">Floresta Noturna</h2>
+                        <p class="text-white text-opacity-90">Sons misteriosos da noite</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Floresta Diurna Sound Panel -->
+        <div id="floresta-diurna-panel" class="sound-panel">
+            <div class="flex items-center mb-6">
+                <div class="back-button" id="back-button-diurna">
+                    <i class="fas fa-arrow-left text-white"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Floresta Diurna</h2>
+                    <p class="text-gray-600">Ajuste os volumes individuais</p>
+                </div>
+            </div>
+            
+            <div class="bg-white bg-opacity-80 rounded-xl p-6 shadow-lg">
+                <!-- Birds Control -->
+                <div class="sound-control">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-dove text-blue-300 mr-3 text-xl"></i>
+                            <span class="font-medium text-gray-800">Passarinhos</span>
+                        </div>
+                        <span id="birds-value" class="text-gray-700 font-bold">50%</span>
+                    </div>
+                    <input type="range" id="birds-slider" min="0" max="100" value="50" class="slider">
+                </div>
+                
+                <!-- Leaves Control -->
+                <div class="sound-control">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-leaf text-green-500 mr-3 text-xl"></i>
+                            <span class="font-medium text-gray-800">Folhas</span>
+                        </div>
+                        <span id="leaves-value" class="text-gray-700 font-bold">40%</span>
+                    </div>
+                    <input type="range" id="leaves-slider" min="0" max="100" value="40" class="slider">
+                </div>
+                
+                <!-- Stream Control -->
+                <div class="sound-control">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-water text-blue-400 mr-3 text-xl"></i>
+                            <span class="font-medium text-gray-800">Riacho</span>
+                        </div>
+                        <span id="stream-value" class="text-gray-700 font-bold">35%</span>
+                    </div>
+                    <input type="range" id="stream-slider" min="0" max="100" value="35" class="slider">
+                </div>
+                
+                <!-- Play/Pause Button -->
+                <button id="play-button-diurna" class="w-full mt-6 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 flex items-center justify-center">
+                    <i class="fas fa-play mr-2"></i> Reproduzir Sons
+                </button>
+            </div>
+        </div>
+        
+        <!-- Floresta Noturna Sound Panel -->
+        <div id="floresta-noturna-panel" class="sound-panel">
+            <div class="flex items-center mb-6">
+                <div class="back-button" id="back-button-noturna">
+                    <i class="fas fa-arrow-left text-white"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Floresta Noturna</h2>
+                    <p class="text-gray-600">Ajuste os volumes individuais</p>
+                </div>
+            </div>
+            
+            <div class="bg-white bg-opacity-80 rounded-xl p-6 shadow-lg">
+                <!-- Frogs Control -->
+                <div class="sound-control">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-frog text-green-600 mr-3 text-xl"></i>
+                            <span class="font-medium text-gray-800">Sapos</span>
+                        </div>
+                        <span id="frogs-value" class="text-gray-700 font-bold">60%</span>
+                    </div>
+                    <input type="range" id="frogs-slider" min="0" max="100" value="60" class="slider">
+                </div>
+                
+                <!-- Crickets Control -->
+                <div class="sound-control">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-bug text-yellow-500 mr-3 text-xl"></i>
+                            <span class="font-medium text-gray-800">Grilos</span>
+                        </div>
+                        <span id="crickets-value" class="text-gray-700 font-bold">50%</span>
+                    </div>
+                    <input type="range" id="crickets-slider" min="0" max="100" value="50" class="slider">
+                </div>
+                
+                <!-- Leaves Control -->
+                <div class="sound-control">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-leaf text-green-400 mr-3 text-xl"></i>
+                            <span class="font-medium text-gray-800">Folhas</span>
+                        </div>
+                        <span id="leaves-night-value" class="text-gray-700 font-bold">30%</span>
+                    </div>
+                    <input type="range" id="leaves-night-slider" min="0" max="100" value="30" class="slider">
+                </div>
+                
+                <!-- Stream Control -->
+                <div class="sound-control">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-water text-blue-300 mr-3 text-xl"></i>
+                            <span class="font-medium text-gray-800">Riacho</span>
+                        </div>
+                        <span id="stream-night-value" class="text-gray-700 font-bold">40%</span>
+                    </div>
+                    <input type="range" id="stream-night-slider" min="0" max="100" value="40" class="slider">
+                </div>
+                
+                <!-- Play/Pause Button -->
+                <button id="play-button-noturna" class="w-full mt-6 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 flex items-center justify-center">
+                    <i class="fas fa-play mr-2"></i> Reproduzir Sons
+                </button>
+            </div>
+        </div>
+        
+        <div class="mt-10 text-center text-gray-600 text-sm" id="instruction">
+            <p>Selecione um ambiente para começar</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mainMenu = document.getElementById('main-menu');
+            const florestaDiurnaPanel = document.getElementById('floresta-diurna-panel');
+            const florestaNoturnaPanel = document.getElementById('floresta-noturna-panel');
+            const backButtonDiurna = document.getElementById('back-button-diurna');
+            const backButtonNoturna = document.getElementById('back-button-noturna');
+            const instruction = document.getElementById('instruction');
+            const firefliesContainer = document.getElementById('fireflies-container');
+            const leavesContainer = document.getElementById('leaves-container');
+            
+            // Diurna sliders
+            const birdsSlider = document.getElementById('birds-slider');
+            const leavesSlider = document.getElementById('leaves-slider');
+            const streamSlider = document.getElementById('stream-slider');
+            
+            // Diurna value displays
+            const birdsValue = document.getElementById('birds-value');
+            const leavesValue = document.getElementById('leaves-value');
+            const streamValue = document.getElementById('stream-value');
+            
+            // Diurna play button
+            const playButtonDiurna = document.getElementById('play-button-diurna');
+            let isPlayingDiurna = false;
+            
+            // Noturna sliders
+            const frogsSlider = document.getElementById('frogs-slider');
+            const cricketsSlider = document.getElementById('crickets-slider');
+            const leavesNightSlider = document.getElementById('leaves-night-slider');
+            const streamNightSlider = document.getElementById('stream-night-slider');
+            
+            // Noturna value displays
+            const frogsValue = document.getElementById('frogs-value');
+            const cricketsValue = document.getElementById('crickets-value');
+            const leavesNightValue = document.getElementById('leaves-night-value');
+            const streamNightValue = document.getElementById('stream-night-value');
+            
+            // Noturna play button
+            const playButtonNoturna = document.getElementById('play-button-noturna');
+            let isPlayingNoturna = false;
+            
+            // Create fireflies for night forest
+            function createFireflies() {
+                for (let i = 0; i < 8; i++) {
+                    const firefly = document.createElement('div');
+                    firefly.className = 'firefly';
+                    firefly.style.left = Math.random() * 100 + '%';
+                    firefly.style.top = Math.random() * 100 + '%';
+                    firefly.style.animation = `firefly ${3 + Math.random() * 5}s linear ${Math.random() * 5}s infinite`;
+                    firefliesContainer.appendChild(firefly);
+                }
+            }
+            
+            // Create falling leaves for day forest
+            function createLeaves() {
+                for (let i = 0; i < 5; i++) {
+                    const leaf = document.createElement('div');
+                    leaf.className = 'leaf';
+                    leaf.style.left = Math.random() * 100 + '%';
+                    leaf.style.top = Math.random() * 30 + '%';
+                    leaf.style.animation = `falling-leaf ${8 + Math.random() * 10}s linear ${Math.random() * 5}s infinite`;
+                    leavesContainer.appendChild(leaf);
+                }
+            }
+            
+            // Update slider values display
+            function updateSliderValues() {
+                // Diurna
+                birdsValue.textContent = birdsSlider.value + '%';
+                leavesValue.textContent = leavesSlider.value + '%';
+                streamValue.textContent = streamSlider.value + '%';
+                
+                // Noturna
+                frogsValue.textContent = frogsSlider.value + '%';
+                cricketsValue.textContent = cricketsSlider.value + '%';
+                leavesNightValue.textContent = leavesNightSlider.value + '%';
+                streamNightValue.textContent = streamNightSlider.value + '%';
+            }
+            
+            // Initialize slider events
+            birdsSlider.addEventListener('input', updateSliderValues);
+            leavesSlider.addEventListener('input', updateSliderValues);
+            streamSlider.addEventListener('input', updateSliderValues);
+            frogsSlider.addEventListener('input', updateSliderValues);
+            cricketsSlider.addEventListener('input', updateSliderValues);
+            leavesNightSlider.addEventListener('input', updateSliderValues);
+            streamNightSlider.addEventListener('input', updateSliderValues);
+            
+            // Menu item click events
+            document.querySelector('.menu-item[data-target="floresta-diurna"]').addEventListener('click', function(e) {
+                e.preventDefault();
+                mainMenu.style.display = 'none';
+                florestaDiurnaPanel.classList.add('active');
+                instruction.style.display = 'none';
+            });
+            
+            document.querySelector('.menu-item[data-target="floresta-noturna"]').addEventListener('click', function(e) {
+                e.preventDefault();
+                mainMenu.style.display = 'none';
+                florestaNoturnaPanel.classList.add('active');
+                instruction.style.display = 'none';
+            });
+            
+            // Back button events
+            backButtonDiurna.addEventListener('click', function() {
+                mainMenu.style.display = 'block';
+                florestaDiurnaPanel.classList.remove('active');
+                instruction.style.display = 'block';
+            });
+            
+            backButtonNoturna.addEventListener('click', function() {
+                mainMenu.style.display = 'block';
+                florestaNoturnaPanel.classList.remove('active');
+                instruction.style.display = 'block';
+            });
+            
+            // Play button events
+            playButtonDiurna.addEventListener('click', function() {
+                isPlayingDiurna = !isPlayingDiurna;
+                
+                if (isPlayingDiurna) {
+                    playButtonDiurna.innerHTML = '<i class="fas fa-pause mr-2"></i> Pausar Sons';
+                    playButtonDiurna.classList.remove('bg-green-600', 'hover:bg-green-700');
+                    playButtonDiurna.classList.add('bg-green-700', 'hover:bg-green-800');
+                    
+                    console.log('Playing day forest sounds with volumes:');
+                    console.log('Birds:', birdsSlider.value + '%');
+                    console.log('Leaves:', leavesSlider.value + '%');
+                    console.log('Stream:', streamSlider.value + '%');
+                } else {
+                    playButtonDiurna.innerHTML = '<i class="fas fa-play mr-2"></i> Reproduzir Sons';
+                    playButtonDiurna.classList.remove('bg-green-700', 'hover:bg-green-800');
+                    playButtonDiurna.classList.add('bg-green-600', 'hover:bg-green-700');
+                    
+                    console.log('Day forest sounds paused');
+                }
+            });
+            
+            playButtonNoturna.addEventListener('click', function() {
+                isPlayingNoturna = !isPlayingNoturna;
+                
+                if (isPlayingNoturna) {
+                    playButtonNoturna.innerHTML = '<i class="fas fa-pause mr-2"></i> Pausar Sons';
+                    playButtonNoturna.classList.remove('bg-green-600', 'hover:bg-green-700');
+                    playButtonNoturna.classList.add('bg-green-700', 'hover:bg-green-800');
+                    
+                    console.log('Playing night forest sounds with volumes:');
+                    console.log('Frogs:', frogsSlider.value + '%');
+                    console.log('Crickets:', cricketsSlider.value + '%');
+                    console.log('Leaves:', leavesNightSlider.value + '%');
+                    console.log('Stream:', streamNightSlider.value + '%');
+                } else {
+                    playButtonNoturna.innerHTML = '<i class="fas fa-play mr-2"></i> Reproduzir Sons';
+                    playButtonNoturna.classList.remove('bg-green-700', 'hover:bg-green-800');
+                    playButtonNoturna.classList.add('bg-green-600', 'hover:bg-green-700');
+                    
+                    console.log('Night forest sounds paused');
+                }
+            });
+            
+            // Create fireflies and leaves when page loads
+            createFireflies();
+            createLeaves();
+        });
+    </script>
+</body>
+</html>

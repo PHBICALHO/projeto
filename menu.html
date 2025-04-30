@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nature Sounds Menu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        .menu-item {
+            transition: all 0.4s ease;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .menu-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .menu-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+            transition: transform 0.5s ease;
+        }
+        
+        .menu-content {
+            position: relative;
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.4);
+            height: 100%;
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+        }
+        
+        .menu-item:hover .menu-bg {
+            transform: scale(1.1);
+        }
+        
+        .ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ripple:after {
+            content: "";
+            display: block;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+            background-repeat: no-repeat;
+            background-position: 50%;
+            transform: scale(10,10);
+            opacity: 0;
+            transition: transform .5s, opacity 1s;
+        }
+        
+        .ripple:active:after {
+            transform: scale(0,0);
+            opacity: 0.3;
+            transition: 0s;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .icon-container {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            margin-right: 1rem;
+        }
+        
+        /* Custom slider styles */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            margin: 10px 0;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .sound-control {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .sound-control:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .sound-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        
+        .sound-panel.active {
+            max-height: 500px;
+        }
+        
+        .back-button {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-3px);
+        }
+        
+        .lightning {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: rgba(255, 255, 255, 0.8);
+            opacity: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .lightning.active {
+            animation: lightning 2s linear infinite;
+        }
+        
+        @keyframes lightning {
+            0% { opacity: 0; }
+            1% { opacity: 0.8; }
+            2% { opacity: 0; }
+            8% { opacity: 0; }
+            9% { opacity: 0.6; }
+            10% { opacity: 0; }
+            100% { opacity: 0; }
+        }
+        
+        .firefly {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: #f8f32b;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 2px #f8f32b;
+            opacity: 0;
+        }
+        
+        @keyframes firefly {
+            0% { transform: translate(0, 0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translate(100px, 50px); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+    <div class="w-full max-w-md mx-auto">
+        <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Sons da Natureza</h1>
+        
+        <div class="space-y-6" id="main-menu">
+            <!-- Praia Tranquila -->
+            <div class="menu-item ripple rounded-xl overflow-hidden shadow-lg h-32" data-target="praia">
+                <div class="menu-bg" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"></div>
+                <div class="menu-content">
+                    <div class="icon-container floating">
+                        <i class="fas fa-umbrella-beach text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-semibold">Praia Tranquila</h2>
+                        <p class="text-white text-opacity-90">Ondas suaves e brisa do mar</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tempestade -->
+            <div class="menu-item ripple rounded-xl overflow-hidden shadow-lg h-32 relative" data-target="tempestade">
+                <div class="lightning" id="lightning-effect"></div>
+                <div class="menu-bg" style="background-image: url('https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"></div>
+                <div class="menu-content">
+                    <div class="icon-container floating" style="animation-delay: 0.5s">
+                        <i class="fas fa-bolt text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-semibold">Tempestade</h2>
+                        <p class="text-white text-opacity-90">Trovões e chuva intensa</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Floresta à Noite -->
+            <div class="menu-item ripple rounded-xl overflow-hidden shadow-lg h-32 relative" data-target="floresta">
+                <div id="fireflies-container"></div>
+                <div class="menu-bg" style="background-image: url('https://images.unsplash.com/photo-1511497584788-876760111969?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80')"></div>
+                <div class="menu-content">
+                    <div class="icon-container floating" style="animation-delay: 1s">
+                        <i class="fas fa-tree text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-semibold">Floresta à Noite</h2>
+                        <p class="text-white text-opacity-90">Sons noturnos da natureza</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Praia Tranquila Sound Panel -->
+        <div id="praia-panel" class="sound-panel">
+            <div class="flex items-center mb-6">
+                <div class="back-button" id="back-button-praia">
+                    <i class="fas fa-arrow-left text-white"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Praia Tranquila</h2>
+                    <p class="text-gray-600">Ajuste os volumes individuais</p>
+                </div>
+            </div>
+            
+            <div class="bg-white bg-opacity-80 rounded-xl p-6 shadow-lg">
+                <!-- Waves Control -->
+                <div class="sound-control">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-water text-blue-500 mr-3 text-xl"></i>
+                            <span class="font-medium text-gray-800">Ondas do Mar</span>
+                        </div>
+                        <span id="waves-value" class="text-gray-700 font-bold">50%</span>
+                    </div>
+                    <input type="range" id="waves-slider" min="0" max="100" value="50" class="slider">
+                </div>
+                
+                <!-- Seagulls Control -->
+                <div class="sound-control">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-dove text-yellow-500 mr-3 text-xl"></i>
+                            <span class="font-medium text-gray-800">Gaivotas</span>
+                        </div>
+                        <span id="seagulls-value" class="text-gray-700 font-bold">30%</span>
+                    </div>
+                    <input type="range" id="seagulls-slider" min="0" max="100, value="30" class="slider">
+                </div>
+                
+                <!-- Wind Control -->
+                <div class="sound-control">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-wind text-gray-500 mr-3 text-xl"></i>
+                            <span class="font-medium text-gray-800">Vento</span>
+                        </div>
+                        <span id="wind-value" class="text-gray-700 font-bold">20%</span>
+                    </div>
+                    <input type="range" id="wind-slider" min="0" max="100" value="20" class="slider">
+                </div>
+                
+                <!-- Play/Pause Button -->
+                <button id="play-button-praia" class="w-full mt-6 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-xl transition duration-300 flex items-center justify-center">
+                    <i class="fas fa-play mr-2"></i> Reproduzir Sons
+                </button>
+            </div>
+        </div>
+        
+        <!-- Tempestade Sound Panel -->
+        <div id="tempestade-panel" class="sound-panel">
+            <div class="flex items-center mb-6">
+                <div class="back-button" id="back-button-tempestade">
+                    <i class="fas fa-arrow-left text-white"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Tempestade</h2>
+                    <p class="text-gray-600">Ajuste os volumes individuals</p>
+                </div>
+            </div>
+            
+            <div class="bg-white bg-opacity-80 rounded-xl p-6 shadow-lg">
+                <!-- Rain Control -->
+                <div class="sound-control">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-cloud-rain text-blue-400 mr-3 text-xl"></i>
+                            <span class="font-medium text-gray-800">Chuva</span>
+                        </div>
+                        <span id="rain-value" class="text-gray-700 font-bold">60%</span>
+                    </div>
+                    <input type="range" id="rain-slider" min="0" max="100" value="60" class="slider">
+                </div>
+                
+                <!-- Thunder Control -->
+                <div class="sound-control">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-bolt text-yellow-400 mr-3 text-xl"></i>
+                            <span class="font-medium text-gray-800">Trovão</span>
+                        </div>
+                        <span id="thunder-value" class="text-gray-700 font-bold">40%</span>
+                    </div>
+                    <input type="range" id="thunder-slider" min="0" max="100" value="40" class="slider">
+                </div>
+                
+                <!-- Water Hitting Ground Control -->
+                <div class="sound-control">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-water text-gray-400 mr-3 text-xl"></i>
+                            <span class="font-medium text-gray-800">Água no Chão</span>
+                        </div>
+                        <span id="water-value" class="text-gray-700 font-bold">30%</span>
+                    </div>
+                    <input type="range" id="water-slider" min="0" max="100" value="30" class="slider">
+                </div>
+                
+                <!-- Play/Pause Button -->
+                <button id="play-button-tempestade" class="w-full mt-6 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-xl transition duration-300 flex items-center justify-center">
+                    <i class="fas fa-play mr-2"></i> Reproduzir Sons
+                </button>
+            </div>
+        </div>
+        
+        <!-- Floresta à Noite Sound Panel -->
+        <div id="floresta-panel" class="sound-panel">
+            <div class="flex items-center mb-6">
+                <div class="back-button" id="back-button-floresta">
+                    <i class="fas fa-arrow-left text-white"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Floresta à Noite</h2>
+                    <p class="text-gray-600">Ajuste os volumes individuais</p>
+                </div>
+            </div>
+            
+            <div class="bg-white bg-opacity-80 rounded-xl p-6 shadow-lg">
+                <!-- Frogs Control -->
+                <div class="sound-control">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-frog text-green-500 mr-3 text-xl"></i>
+                            <span class="font-medium text-gray-800">Sapos</span>
+                        </div>
+                        <span id="frogs-value" class="text-gray-700 font-bold">50%</span>
+                    </div>
+                    <input type="range" id="frogs-slider" min="0" max="100" value="50" class="slider">
+                </div>
+                
+                <!-- Crickets Control -->
+                <div class="sound-control">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-bug text-yellow-600 mr-3 text-xl"></i>
+                            <span class="font-medium text-gray-800">Grilos</span>
+                        </div>
+                        <span id="crickets-value" class="text-gray-700 font-bold">40%</span>
+                    </div>
+                    <input type="range" id="crickets-slider" min="0" max="100" value="40" class="slider">
+                </div>
+                
+                <!-- Leaves Control -->
+                <div class="sound-control">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-leaf text-green-400 mr-3 text-xl"></i>
+                            <span class="font-medium text-gray-800">Folhas</span>
+                        </div>
+                        <span id="leaves-value" class="text-gray-700 font-bold">30%</span>
+                    </div>
+                    <input type="range" id="leaves-slider" min="0" max="100" value="30" class="slider">
+                </div>
+                
+                <!-- Stream Control -->
+                <div class="sound-control">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-stream text-blue-300 mr-3 text-xl"></i>
+                            <span class="font-medium text-gray-800">Riacho</span>
+                        </div>
+                        <span id="stream-value" class="text-gray-700 font-bold">35%</span>
+                    </div>
+                    <input type="range" id="stream-slider" min="0" max="100" value="35" class="slider">
+                </div>
+                
+                <!-- Birds Control -->
+                <div class="sound-control">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-dove text-gray-300 mr-3 text-xl"></i>
+                            <span class="font-medium text-gray-800">Passarinhos</span>
+                        </div>
+                        <span id="birds-value" class="text-gray-700 font-bold">25%</span>
+                    </div>
+                    <input type="range" id="birds-slider" min="0" max="100" value="25" class="slider">
+                </div>
+                
+                <!-- Play/Pause Button -->
+                <button id="play-button-floresta" class="w-full mt-6 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-xl transition duration-300 flex items-center justify-center">
+                    <i class="fas fa-play mr-2"></i> Reproduzir Sons
+                </button>
+            </div>
+        </div>
+        
+        <div class="mt-10 text-center text-gray-500 text-sm" id="instruction">
+            <p>Selecione um ambiente para começar</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mainMenu = document.getElementById('main-menu');
+            const praiaPanel = document.getElementById('praia-panel');
+            const tempestadePanel = document.getElementById('tempestade-panel');
+            const florestaPanel = document.getElementById('floresta-panel');
+            const backButtonPraia = document.getElementById('back-button-praia');
+            const backButtonTempestade = document.getElementById('back-button-tempestade');
+            const backButtonFloresta = document.getElementById('back-button-floresta');
+            const instruction = document.getElementById('instruction');
+            const lightningEffect = document.getElementById('lightning-effect');
+            const firefliesContainer = document.getElementById('fireflies-container');
+            
+            // Praia sliders
+            const wavesSlider = document.getElementById('waves-slider');
+            const seagullsSlider = document.getElementById('seagulls-slider');
+            const windSlider = document.getElementById('wind-slider');
+            
+            // Praia value displays
+            const wavesValue = document.getElementById('waves-value');
+            const seagullsValue = document.getElementById('seagulls-value');
+            const windValue = document.getElementById('wind-value');
+            
+            // Praia play button
+            const playButtonPraia = document.getElementById('play-button-praia');
+            let isPlayingPraia = false;
+            
+            // Tempestade sliders
+            const rainSlider = document.getElementById('rain-slider');
+            const thunderSlider = document.getElementById('thunder-slider');
+            const waterSlider = document.getElementById('water-slider');
+            
+            // Tempestade value displays
+            const rainValue = document.getElementById('rain-value');
+            const thunderValue = document.getElementById('thunder-value');
+            const waterValue = document.getElementById('water-value');
+            
+            // Tempestade play button
+            const playButtonTempestade = document.getElementById('play-button-tempestade');
+            let isPlayingTempestade = false;
+            
+            // Floresta sliders
+            const frogsSlider = document.getElementById('frogs-slider');
+            const cricketsSlider = document.getElementById('crickets-slider');
+            const leavesSlider = document.getElementById('leaves-slider');
+            const streamSlider = document.getElementById('stream-slider');
+            const birdsSlider = document.getElementById('birds-slider');
+            
+            // Floresta value displays
+            const frogsValue = document.getElementById('frogs-value');
+            const cricketsValue = document.getElementById('crickets-value');
+            const leavesValue = document.getElementById('leaves-value');
+            const streamValue = document.getElementById('stream-value');
+            const birdsValue = document.getElementById('birds-value');
+            
+            // Floresta play button
+            const playButtonFloresta = document.getElementById('play-button-floresta');
+            let isPlayingFloresta = false;
+            
+            // Create fireflies for forest menu item
+            function createFireflies() {
+                for (let i = 0; i < 8; i++) {
+                    const firefly = document.createElement('div');
+                    firefly.className = 'firefly';
+                    firefly.style.left = Math.random() * 100 + '%';
+                    firefly.style.top = Math.random() * 100 + '%';
+                    firefly.style.animation = `firefly ${3 + Math.random() * 5}s linear ${Math.random() * 5}s infinite`;
+                    firefliesContainer.appendChild(firefly);
+                }
+            }
+            
+            // Update slider values display
+            function updateSliderValues() {
+                // Praia
+                wavesValue.textContent = wavesSlider.value + '%';
+                seagullsValue.textContent = seagullsSlider.value + '%';
+                windValue.textContent = windSlider.value + '%';
+                
+                // Tempestade
+                rainValue.textContent = rainSlider.value + '%';
+                thunderValue.textContent = thunderSlider.value + '%';
+                waterValue.textContent = waterSlider.value + '%';
+                
+                // Floresta
+                frogsValue.textContent = frogsSlider.value + '%';
+                cricketsValue.textContent = cricketsSlider.value + '%';
+                leavesValue.textContent = leavesSlider.value + '%';
+                streamValue.textContent = streamSlider.value + '%';
+                birdsValue.textContent = birdsSlider.value + '%';
+            }
+            
+            // Initialize slider events
+            wavesSlider.addEventListener('input', updateSliderValues);
+            seagullsSlider.addEventListener('input', updateSliderValues);
+            windSlider.addEventListener('input', updateSliderValues);
+            rainSlider.addEventListener('input', updateSliderValues);
+            thunderSlider.addEventListener('input', updateSliderValues);
+            waterSlider.addEventListener('input', updateSliderValues);
+            frogsSlider.addEventListener('input', updateSliderValues);
+            cricketsSlider.addEventListener('input', updateSliderValues);
+            leavesSlider.addEventListener('input', updateSliderValues);
+            streamSlider.addEventListener('input', updateSliderValues);
+            birdsSlider.addEventListener('input', updateSliderValues);
+            
+            // Menu item click events
+            document.querySelector('.menu-item[data-target="praia"]').addEventListener('click', function(e) {
+                e.preventDefault();
+                mainMenu.style.display = 'none';
+                praiaPanel.classList.add('active');
+                instruction.style.display = 'none';
+            });
+            
+            document.querySelector('.menu-item[data-target="tempestade"]').addEventListener('click', function(e) {
+                e.preventDefault();
+                mainMenu.style.display = 'none';
+                tempestadePanel.classList.add('active');
+                instruction.style.display = 'none';
+            });
+            
+            document.querySelector('.menu-item[data-target="floresta"]').addEventListener('click', function(e) {
+                e.preventDefault();
+                mainMenu.style.display = 'none';
+                florestaPanel.classList.add('active');
+                instruction.style.display = 'none';
+            });
+            
+            // Back button events
+            backButtonPraia.addEventListener('click', function() {
+                mainMenu.style.display = 'block';
+                praiaPanel.classList.remove('active');
+                instruction.style.display = 'block';
+            });
+            
+            backButtonTempestade.addEventListener('click', function() {
+                mainMenu.style.display = 'block';
+                tempestadePanel.classList.remove('active');
+                instruction.style.display = 'block';
+            });
+            
+            backButtonFloresta.addEventListener('click', function() {
+                mainMenu.style.display = 'block';
+                florestaPanel.classList.remove('active');
+                instruction.style.display = 'block';
+            });
+            
+            // Play button events
+            playButtonPraia.addEventListener('click', function() {
+                isPlayingPraia = !isPlayingPraia;
+                
+                if (isPlayingPraia) {
+                    playButtonPraia.innerHTML = '<i class="fas fa-pause mr-2"></i> Pausar Sons';
+                    playButtonPraia.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                    playButtonPraia.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                    
+                    console.log('Playing beach sounds with volumes:');
+                    console.log('Waves:', wavesSlider.value + '%');
+                    console.log('Seagulls:', seagullsSlider.value + '%');
+                    console.log('Wind:', windSlider.value + '%');
+                } else {
+                    playButtonPraia.innerHTML = '<i class="fas fa-play mr-2"></i> Reproduzir Sons';
+                    playButtonPraia.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    playButtonPraia.classList.add('bg-blue-500', 'hover:bg-blue-600');
+                    
+                    console.log('Beach sounds paused');
+                }
+            });
+            
+            playButtonTempestade.addEventListener('click', function() {
+                isPlayingTempestade = !isPlayingTempestade;
+                
+                if (isPlayingTempestade) {
+                    playButtonTempestade.innerHTML = '<i class="fas fa-pause mr-2"></i> Pausar Sons';
+                    playButtonTempestade.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                    playButtonTempestade.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                    lightningEffect.classList.add('active');
+                    
+                    console.log('Playing storm sounds with volumes:');
+                    console.log('Rain:', rainSlider.value + '%');
+                    console.log('Thunder:', thunderSlider.value + '%');
+                    console.log('Water hitting ground:', waterSlider.value + '%');
+                } else {
+                    playButtonTempestade.innerHTML = '<i class="fas fa-play mr-2"></i> Reproduzir Sons';
+                    playButtonTempestade.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    playButtonTempestade.classList.add('bg-blue-500', 'hover:bg-blue-600');
+                    lightningEffect.classList.remove('active');
+                    
+                    console.log('Storm sounds paused');
+                }
+            });
+            
+            playButtonFloresta.addEventListener('click', function() {
+                isPlayingFloresta = !isPlayingFloresta;
+                
+                if (isPlayingFloresta) {
+                    playButtonFloresta.innerHTML = '<i class="fas fa-pause mr-2"></i> Pausar Sons';
+                    playButtonFloresta.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                    playButtonFloresta.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                    
+                    console.log('Playing forest sounds with volumes:');
+                    console.log('Frogs:', frogsSlider.value + '%');
+                    console.log('Crickets:', cricketsSlider.value + '%');
+                    console.log('Leaves:', leavesSlider.value + '%');
+                    console.log('Stream:', streamSlider.value + '%');
+                    console.log('Birds:', birdsSlider.value + '%');
+                } else {
+                    playButtonFloresta.innerHTML = '<i class="fas fa-play mr-2"></i> Reproduzir Sons';
+                    playButtonFloresta.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    playButtonFloresta.classList.add('bg-blue-500', 'hover:bg-blue-600');
+                    
+                    console.log('Forest sounds paused');
+                }
+            });
+            
+            // Random lightning effect for storm panel
+            setInterval(() => {
+                if (isPlayingTempestade && Math.random() < 0.1) {
+                    lightningEffect.classList.add('active');
+                    setTimeout(() => {
+                        lightningEffect.classList.remove('active');
+                    }, 200);
+                }
+            }, 3000);
+            
+            // Create fireflies when page loads
+            createFireflies();
+        });
+    </script>
+</body>
+</html>
