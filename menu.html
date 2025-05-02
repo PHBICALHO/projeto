@@ -463,6 +463,69 @@
     </div>
 
     <script>
+    // Sliders e elementos de texto
+    const rainSlider = document.getElementById('rain-slider');
+    const thunderSlider = document.getElementById('thunder-slider');
+    const waterSlider = document.getElementById('water-slider');
+
+    const rainValue = document.getElementById('rain-value');
+    const thunderValue = document.getElementById('thunder-value');
+    const waterValue = document.getElementById('water-value');
+
+    // Áudios mapeados corretamente
+    const audioRain = new Audio('0430 (1).mp3'); // Chuva
+    const audioThunder = new Audio('raiopronto.mp3'); // Trovão
+    const audioWater = new Audio('agua_chaopronto.mp3'); // Água no chão
+
+    audioRain.loop = true;
+    audioThunder.loop = true;
+    audioWater.loop = true;
+
+    // Botão play/pause
+    const playButtonTempestade = document.getElementById('play-button-tempestade');
+    let isPlayingTempestade = false;
+
+    playButtonTempestade.addEventListener('click', () => {
+        if (!isPlayingTempestade) {
+            // Atualiza volume inicial
+            audioRain.volume = rainSlider.value / 100;
+            audioThunder.volume = thunderSlider.value / 100;
+            audioWater.volume = waterSlider.value / 100;
+
+            // Reproduz os áudios
+            audioRain.play();
+            audioThunder.play();
+            audioWater.play();
+
+            playButtonTempestade.innerHTML = '<i class="fas fa-pause mr-2"></i> Pausar Sons';
+        } else {
+            // Pausa os áudios
+            audioRain.pause();
+            audioThunder.pause();
+            audioWater.pause();
+
+            playButtonTempestade.innerHTML = '<i class="fas fa-play mr-2"></i> Reproduzir Sons';
+        }
+
+        isPlayingTempestade = !isPlayingTempestade;
+    });
+
+    // Controle de volume com os sliders
+    rainSlider.addEventListener('input', () => {
+        rainValue.textContent = rainSlider.value + '%';
+        audioRain.volume = rainSlider.value / 100;
+    });
+
+    thunderSlider.addEventListener('input', () => {
+        thunderValue.textContent = thunderSlider.value + '%';
+        audioThunder.volume = thunderSlider.value / 100;
+    });
+
+    waterSlider.addEventListener('input', () => {
+        waterValue.textContent = waterSlider.value + '%';
+        audioWater.volume = waterSlider.value / 100;
+    });
+
         document.addEventListener('DOMContentLoaded', function() {
             const mainMenu = document.getElementById('main-menu');
             const praiaPanel = document.getElementById('praia-panel');
