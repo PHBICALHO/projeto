@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastre-se</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+  <!-- Navigation (Header) -->
+  <nav class="container mx-auto px-6 py-6">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <i class="fas fa-moon text-2xl mr-2 text-indigo-600"></i>
+        <span class="text-2xl font-bold">SLP</span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <a href="login.html" class="px-4 py-2 rounded-lg font-medium btn-outline text-indigo-600">Login</a>
+        <a href="#pricing" class="px-4 py-2 rounded-lg font-medium btn-primary text-white bg-indigo-600 hover:bg-indigo-700">Cadastre-se</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Conteúdo Central -->
+  <div class="flex items-center justify-center px-4 pb-12">
+    <div class="bg-white rounded-xl custom-shadow w-full max-w-5xl overflow-hidden flex flex-col md:flex-row">
+
+      <!-- Formulário -->
+      <div class="w-full md:w-1/2 p-8">
+        <div class="text-center mb-8">
+          <h1 class="text-3xl font-bold text-gray-800 mb-2">Crie sua conta</h1>
+          <p class="text-gray-600">Junte-se a milhares de usuários satisfeitos</p>
+        </div>
+
+        <div class="space-y-4">
+          <button id="googleBtn" class="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-lg text-gray-700 font-medium hover:shadow-sm transition duration-200">
+            <i class="fab fa-google text-red-500 mr-3"></i>
+            Continuar com Google
+          </button>
+
+          <button id="appleBtn" class="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-lg text-gray-700 font-medium hover:shadow-sm transition duration-200">
+            <i class="fab fa-apple text-gray-900 mr-3"></i>
+            Continuar com Apple
+          </button>
+        </div>
+
+        <div class="divider my-6 text-center text-sm text-gray-500">ou</div>
+
+        <form id="signupForm" class="space-y-4">
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+            <input type="email" id="email" name="email" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200" placeholder="seu@email.com" />
+          </div>
+
+          <div class="relative">
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+            <input type="password" id="password" name="password" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200 pr-10" placeholder="••••••••" />
+            <span id="togglePassword" class="absolute top-10 right-4 cursor-pointer text-gray-400">
+              <i class="far fa-eye"></i>
+            </span>
+          </div>
+
+          <div class="flex items-center">
+            <input type="checkbox" id="terms" name="terms" required class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
+            <label for="terms" class="ml-2 block text-sm text-gray-700">
+              Concordo com os <a href="#" class="text-indigo-600 hover:text-indigo-500">Termos de Serviço</a> e <a href="#" class="text-indigo-600 hover:text-indigo-500">Política de Privacidade</a>
+            </label>
+          </div>
+
+          <button type="submit" class="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200">
+            Cadastrar
+          </button>
+        </form>
+
+        <div class="mt-6 text-center">
+          <p class="text-sm text-gray-600">
+            Já tem uma conta? <a href="login.html" class="text-indigo-600 font-medium hover:text-indigo-500">Entrar</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- Imagem à direita -->
+      <div class="w-full md:w-1/2 h-64 md:h-auto">
+        <img src="https://source.unsplash.com/600x800/?technology,login" alt="Imagem ilustrativa" class="w-full h-full object-cover" />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const togglePassword = document.getElementById("togglePassword");
+      const password = document.getElementById("password");
+
+      togglePassword.addEventListener("click", function () {
+        const type = password.getAttribute("type") === "password" ? "text" : "password";
+        password.setAttribute("type", type);
+        this.innerHTML = type === "password" ? '<i class="far fa-eye"></i>' : '<i class="far fa-eye-slash"></i>';
+      });
+
+      document.getElementById("googleBtn").addEventListener("click", function () {
+        alert("Redirecionando para autenticação com Google...");
+      });
+
+      document.getElementById("appleBtn").addEventListener("click", function () {
+        alert("Redirecionando para autenticação com Apple...");
+      });
+
+      document.getElementById("signupForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        if (!document.getElementById("terms").checked) {
+          alert("Você deve concordar com os Termos de Serviço e Política de Privacidade");
+          return;
+        }
+
+        if (!email.includes("@") || !email.includes(".")) {
+          alert("Por favor, insira um e-mail válido");
+          return;
+        }
+
+        if (password.length < 6) {
+          alert("A senha deve ter pelo menos 6 caracteres");
+          return;
+        }
+
+        alert(`Cadastro realizado com sucesso!\nE-mail: ${email}`);
+        this.reset();
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SLP - Durma Melhor e Mais Rápido</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+            body {
+                font-family: 'Inter', sans-serif;
+                background-color: #ffffff;
+                color: #000000;
+            }
+    
+            .hero-gradient {
+                background: linear-gradient(135deg, #000000 0%, #ffffff 100%);
+            }
+    
+            .plan-card {
+                transition: all 0.3s ease;
+                box-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.05);
+            }
+    
+            .plan-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            }
+    
+            .feature-icon {
+                width: 48px;
+                height: 48px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 12px;
+                background-color: #000000;
+                color: #ffffff;
+            }
+    
+            .testimonial-card {
+                background-color: rgb(255, 255, 255);
+                border-radius: 16px;
+                box-shadow: 0 6px 8px rgba(0, 0, 0, 0.05);
+            }
+    
+            .nav-link {
+                position: relative;
+                color: #1e293b;
+            }
+    
+            .nav-link::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 2px;
+                bottom: -2px;
+                left: 0;
+                background: #000000;
+                transition: width 0.3s ease;
+            }
+    
+            .nav-link:hover::after {
+                width: 100%;
+            }
+    
+            .btn-primary {
+                background-color: #000000;
+                transition: all 0.3s ease;
+            }
+    
+            .btn-primary:hover {
+                background-color: #222222;
+                transform: translateY(-2px);
+            }
+    
+            .btn-outline {
+                border: 2px solid #000000;
+                transition: all 0.3s ease;
+            }
+    
+            .btn-outline:hover {
+                background-color: #000000;
+                color: rgb(255, 255, 255);
+            }
+    
+            .highlight-plan {
+                border: 2px solid #000000;
+                position: relative;
+                overflow: hidden;
+            }
+    
+            .highlight-badge {
+                position: absolute;
+                top: 0;
+                right: 0;
+                background-color: #000000;
+                color: white;
+                padding: 4px 12px;
+                border-bottom-left-radius: 12px;
+                font-size: 12px;
+                font-weight: 600;
+            }
+        </style>
+    
+</head>
+<header><button><a href="conta.html">opções de usuário</a></button></header>
+<body>
+        <!-- Pricing Section -->
+        <section id="pricing" class="bg-slate-50 py-16">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold mb-4">Escolha seu plano</h2>
+                    <p class="text-xl text-slate-600 max-w-2xl mx-auto">
+                        Experimente gratuitamente ou desbloqueie todos os recursos com um plano premium
+                    </p>
+                </div>
+    
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    <!-- basic -->
+                    <div class="plan-card bg-white p-8 rounded-xl">
+                        <h3 class="text-xl font-bold mb-2">básico</h3>
+                        <p class="text-slate-600 mb-6">Ideal para experimentar</p>
+                        <div class="text-4xl font-bold mb-6">R$27,00<span
+                                class="text-lg font-normal text-slate-500">/mês</span></div>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>5 sons básicos
+                            </li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Timer de 30
+                                minutos</li>
+                            <li class="flex items-center text-slate-400"><i
+                                    class="fas fa-times text-red-400 mr-2"></i>Meditações guiadas</li>
+                            <li class="flex items-center text-slate-400"><i
+                                    class="fas fa-times text-red-400 mr-2"></i>Acompanhamento de sono</li>
+                            <li class="flex items-center text-slate-400"><i
+                                    class="fas fa-times text-red-400 mr-2"></i>Combinações de sons</li>
+                        </ul>
+    
+                        <button id="checkout-button-basic"
+                            class="w-full py-3 rounded-lg font-medium border-2 border-black text-black hover:bg-black hover:text-white transition">
+                            <a href="/cadastro.html">Começar agora</a>
+                        </button>
+                    </div>
+    
+    
+                    <!-- Premium Monthly (Highlighted) -->
+                    <div class="plan-card bg-white p-8 rounded-xl highlight-plan">
+                        <div class="highlight-badge">MAIS POPULAR</div>
+                        <h3 class="text-xl font-bold mb-2">Premium</h3>
+                        <p class="text-slate-600 mb-6">Plano mensal</p>
+                        <div class="text-4xl font-bold mb-6">R$57<span
+                                class="text-lg font-normal text-slate-500">/mês</span></div>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Todos os sons (50+)</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Timer ilimitado</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Meditações guiadas</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Acompanhamento de sono</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Combinações de sons</span>
+                            </li>
+                        </ul>
+                        <button
+                            class="w-full py-3 rounded-lg font-medium bg-black text-white hover:text-white hover:bg-green-600 transition">
+                            Assinar mensalmente
+                        </button>
+                    </div>
+    
+                    <!-- Premium Annual -->
+                    <div class="plan-card bg-white p-8 rounded-xl">
+                        <h3 class="text-xl font-bold mb-2">Premium</h3>
+                        <p class="text-slate-600 mb-6">Plano anual (economize 40%)</p>
+                        <div class="text-4xl font-bold mb-6">R$410,4<span
+                                class="text-lg font-normal text-slate-500">/ano</span></div>
+                        <p class="text-sm text-slate-500 mb-2">Equivalente a R$34,2/mês</p>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Todos os sons (50+)</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Timer ilimitado</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Meditações guiadas</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Acompanhamento de sono</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Combinações de sons</span>
+                            </li>
+                        </ul>
+                        <button
+                            class="w-full py-3 rounded-lg font-medium bg-black text-white hover:bg-green-600 transition">
+                            Assinar anualmente
+                        </button>
+                    </div>
+                </div>
+    
+                <div class="text-center mt-8">
+                    <p class="text-slate-600">Todos os planos incluem 7 dias de teste gratuito. Cancele quando quiser.</p>
+                </div>
+            </div>
+        </section>
+</body>
+</html>
